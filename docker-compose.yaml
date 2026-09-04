@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: razorpay-recon-postgres
+    environment:
+      POSTGRES_DB: recon
+      POSTGRES_USER: recon
+      POSTGRES_PASSWORD: recon_dev_only
+    ports:
+      - "5432:5432"
+    volumes:
+      - recon_postgres_data:/var/lib/postgresql/data
+      - ./src/recon/infrastructure/persistence/postgres/schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+
+## Mini IO
+  minio:
+      image: minio/minio
+      container_name: razorpay-recon-minio
+      command: server /data --console-address ":9001"
+      environment:
+        MINIO_ROOT_USER: recon_minio
+        MINIO_ROOT_PASSWORD: recon_minio_dev_only
+      ports:
+        - "9000:9000"  ## Minio API
+        - "9001:9001"  ## Web console
+      volumes:
+        - recon_minio_data:/data
+
+volumes:
+  recon_postgres_data:
+  recon_minio_data:

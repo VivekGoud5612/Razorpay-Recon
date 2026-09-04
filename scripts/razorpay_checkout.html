@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Razorpay Test Checkout</title>
+</head>
+
+<body>
+
+<h2 id="title">Razorpay Test Payment</h2>
+
+<button id="pay-button"></button>
+
+<pre id="result"></pre>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+
+const orderId = params.get("order_id");
+const amount = Number(params.get("amount"));
+const currency = params.get("currency") || "INR";
+const scenario = params.get("scenario") || "unknown";
+
+if (!orderId || !amount) {
+    throw new Error("order_id and amount are required");
+}
+
+document.getElementById("title").textContent =
+    `Scenario ${scenario} — Razorpay Test Payment`;
+
+document.getElementById("pay-button").textContent =
+    `Pay ₹${(amount / 100).toFixed(2)}`;
+
+const options = {
+    key: "rzp_test_TUuo4fL2iKZyAh",
+    amount: amount,
+    currency: currency,
+    order_id: orderId,
+
+    name: "Recon Test Merchant",
+    description: `Scenario ${scenario}`,
+
+    handler: function (response) {
+        document.getElementById("result").textContent =
+            JSON.stringify(response, null, 2);
+
+        console.log(
+            "Razorpay payment response:",
+            response,
+        );
+    },
+
+    prefill: {
+        name: "Test Customer",
+        email: "test@example.com",
+        contact: "+919000090000",
+    },
+};
+
+const razorpay = new Razorpay(options);
+
+document.getElementById("pay-button").onclick = function (event) {
+    event.preventDefault();
+    razorpay.open();
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Razorpay Test Checkout</title>
+</head>
+
+<body>
+
+<h2>Razorpay Test Payment</h2>
+
+<button id="pay-button">Pay ₹5100</button>
+
+<pre id="result"></pre>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+const options = {
+    key: "rzp_test_TUuo4fL2iKZyAh",
+
+    amount: 510000,
+    currency: "INR",
+
+    order_id: "order_TWej9dBDGOEEHW",
+
+    name: "Recon Test Merchant",
+    description: "Scenario 01 Test Payment",
+
+    handler: function (response) {
+        document.getElementById("result").textContent =
+            JSON.stringify(response, null, 2);
+
+        console.log("Razorpay payment response:", response);
+    },
+
+    prefill: {
+        name: "Test Customer",
+        email: "test@example.com",
+        contact: "+919000090000"
+    }
+};
+
+const razorpay = new Razorpay(options);
+
+document.getElementById("pay-button").onclick = function (event) {
+    event.preventDefault();
+    razorpay.open();
+};
+</script>
+
+</body>
+</html>
