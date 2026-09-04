@@ -184,9 +184,10 @@ class InvestigationPostgresRepository(InvestigationRepository):
                     settlement_id,
                     finding_ids,
                     status,
-                    response
+                    response,
+                    created_at
                 )
-                VALUES ($1, $2, $3, $4, $5::jsonb)
+                VALUES ($1, $2, $3, $4, $5::jsonb, COALESCE($6, now()))
                 ON CONFLICT (investigation_id)
                 DO UPDATE SET
                     status = EXCLUDED.status,
@@ -197,6 +198,7 @@ class InvestigationPostgresRepository(InvestigationRepository):
                 response.finding_ids,
                 response.status,
                 json.dumps(payload, default=str),
+                response.created_at,
             )
 
     async def get(

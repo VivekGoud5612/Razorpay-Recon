@@ -4,8 +4,10 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { Shell, Title, Status, Kpi, Table } from '@/components/shell'
 import { LoadingState, ErrorState, EmptyState } from '@/components/async-state'
+import { CaseMap } from '@/components/case-map'
 import { useReconciliation } from '@/lib/hooks/useReconciliation'
 import { useFindings } from '@/lib/hooks/useFindings'
+import { useGraph } from '@/lib/hooks/useGraph'
 import { useRunReconciliation } from '@/lib/hooks/useRunReconciliation'
 import { money, formatDateTime } from '@/lib/format'
 
@@ -16,6 +18,9 @@ export function ReconciliationDetail() {
   const rerun = useRunReconciliation()
 
   const reconciliation = reconciliationQuery.data
+  // The graph only exists once a settlement reconciles to "exception" (see
+  // ReconcileSettlementUseCase) — don't fetch it otherwise.
+  const graphQuery = useGraph(reconciliation?.status === 'exception' ? id : undefined)
 
   const handleRerun = () => {
     if (!reconciliation) return
@@ -129,15 +134,26 @@ export function ReconciliationDetail() {
         )}
 
         {reconciliation.status === 'exception' && (
-          <div className="section-head compact">
-            <div>
-              <span className="eyebrow">EVIDENCE GRAPH</span>
-              <h2>Relationship map</h2>
+          <>
+            <div className="section-head compact">
+              <div>
+                <span className="eyebrow">EVIDENCE GRAPH / CASE MAP</span>
+                <h2>Relationship map</h2>
+              </div>
+              <Link className="text-link" to={`/reconciliations/${reconciliation.settlement_id}/graph`}>
+                Open full graph <ArrowUpRight size={14} />
+              </Link>
             </div>
-            <Link className="text-link" to={`/reconciliations/${reconciliation.settlement_id}/graph`}>
-              Open graph <ArrowUpRight size={14} />
-            </Link>
-          </div>
+
+            {graphQuery.isLoading && <LoadingState label="Loading evidence graph…" />}
+            {graphQuery.isError && <ErrorState error={graphQuery.error} retry={graphQuery.refetch} />}
+            {!graphQuery.isLoading && !graphQuery.isError && graphQuery.data && graphQuery.data.nodes.length === 0 && (
+              <EmptyState title="No graph yet" message="No evidence graph has been built for this settlement." />
+            )}
+            {!graphQuery.isLoading && !graphQuery.isError && graphQuery.data && graphQuery.data.nodes.length > 0 && (
+              <CaseMap nodes={graphQuery.data.nodes} edges={graphQuery.data.edges} maxNodes={8} />
+            )}
+          </>
         )}
       </main>
     </Shell>
