@@ -23,6 +23,24 @@ class ReconciliationPostgresResultRepository(ReconciliationResultRepository):
     ) -> None:
         async with self._db.acquire() as conn:
             async with conn.transaction():
+                # A re-run must *replace* the settlement's findings/evidence,
+                # not accumulate alongside whatever a previous run produced --
+                # otherwise a finding that no longer applies (e.g. the
+                # underlying data was fixed) lingers forever. Join rows first
+                # to respect the FKs into both parent tables.
+                await conn.execute(
+                    "DELETE FROM reconciliation_finding_evidence WHERE settlement_id = $1",
+                    settlement_id,
+                )
+                await conn.execute(
+                    "DELETE FROM reconciliation_findings WHERE settlement_id = $1",
+                    settlement_id,
+                )
+                await conn.execute(
+                    "DELETE FROM reconciliation_evidence WHERE settlement_id = $1",
+                    settlement_id,
+                )
+
                 await self._save_findings(conn, settlement_id, findings)
                 await self._save_evidence(conn, settlement_id, evidence)
                 await self._save_finding_evidence(conn, settlement_id, findings)

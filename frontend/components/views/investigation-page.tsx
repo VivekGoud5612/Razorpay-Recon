@@ -9,6 +9,25 @@ import { formatDateTime } from '@/lib/format'
 
 const TIMELINE_STEPS = ['Finding detected', 'Evidence collected', 'Relationships analyzed', 'Hypotheses generated', 'Policy validated', 'Conclusion']
 
+// Purely a display tier over the backend's raw confidence float — no new
+// data, just making the VERIFIED/LIKELY/UNCERTAIN distinction visible.
+// 0.60 mirrors InvestigationPolicy.MIN_CONFIDENCE (below it a hypothesis can
+// never become the root cause / triggers abstention).
+function confidenceTier(confidence: number): { label: string; statusValue: string } {
+  if (confidence >= 0.85) return { label: 'VERIFIED', statusValue: 'resolved' }
+  if (confidence >= 0.6) return { label: 'LIKELY', statusValue: 'warning' }
+  return { label: 'UNCERTAIN', statusValue: 'pending' }
+}
+
+function ConfidenceBadge({ confidence }: { confidence: number }) {
+  const tier = confidenceTier(confidence)
+  return (
+    <span className={`status ${tier.statusValue}`}>
+      {tier.label} · {Math.round(confidence * 100)}%
+    </span>
+  )
+}
+
 export function InvestigationPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
@@ -81,7 +100,9 @@ export function InvestigationPage() {
 
         {investigation.should_abstain && (
           <section className="investigation-teaser">
-            <span className="eyebrow">ABSTAINED</span>
+            <span className="eyebrow">
+              <span className="status needs_review">ABSTAINED</span>
+            </span>
             <h2>The model abstained from a root-cause conclusion</h2>
             <p>{investigation.abstain_reason ?? 'Evidence was insufficient to support a reliable conclusion.'}</p>
           </section>
@@ -94,8 +115,10 @@ export function InvestigationPage() {
                 <span className="eyebrow">ROOT CAUSE</span>
                 <h2>{rootHypothesis ? rootHypothesis.statement : 'No root cause established'}</h2>
               </div>
-              {investigation.root_cause && (
-                <span className="hypothesis-label">AI HYPOTHESIS · {Math.round(investigation.root_cause.confidence * 100)}%</span>
+              {investigation.root_cause ? (
+                <ConfidenceBadge confidence={investigation.root_cause.confidence} />
+              ) : (
+                <span className="status needs_review">ABSTAINED</span>
               )}
             </div>
 
@@ -118,9 +141,10 @@ export function InvestigationPage() {
             ) : (
               investigation.hypotheses.map((h) => (
                 <div className="callout" key={h.hypothesis_id}>
-                  <b>
-                    {h.hypothesis_id} · {Math.round(h.confidence * 100)}% confidence
-                  </b>
+                  <div className="finding-top">
+                    <b>{h.hypothesis_id}</b>
+                    <ConfidenceBadge confidence={h.confidence} />
+                  </div>
                   <p>{h.statement}</p>
                 </div>
               ))

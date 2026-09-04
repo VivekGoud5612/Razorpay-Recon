@@ -84,6 +84,19 @@ class ReconciliationPostgresGraphRepository(ReconciliationGraphRepository):
     ) -> None:
         async with self._db.acquire() as conn:
             async with conn.transaction():
+                # Replace, don't accumulate: a re-run's graph must reflect
+                # only the current data, not also every node/edge a past run
+                # (e.g. before a data fix) happened to produce. Edges first
+                # -- they FK into graph_nodes.id.
+                await conn.execute(
+                    "DELETE FROM graph_edges WHERE settlement_id = $1",
+                    settlement_id,
+                )
+                await conn.execute(
+                    "DELETE FROM graph_nodes WHERE settlement_id = $1",
+                    settlement_id,
+                )
+
                 node_ids = await self._save_nodes(conn, settlement_id, graph)
                 await self._save_edges(conn, settlement_id, graph, node_ids)
 

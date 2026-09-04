@@ -169,7 +169,13 @@ CREATE TABLE merchant_orders (
     import_pk           BIGINT NOT NULL REFERENCES merchant_imports(id),
 
     merchant_order_id   TEXT NOT NULL,
-    razorpay_order_id   TEXT NOT NULL REFERENCES razorpay_orders(order_id),
+    -- No FK to razorpay_orders(order_id): a merchant-submitted order can
+    -- legitimately reference a Razorpay order that doesn't exist (that's
+    -- exactly what RAZORPAY_ORDER_NOT_FOUND in ReconcileSettlementService
+    -- detects). The ingestion boundary must accept merchant data as-is;
+    -- resolving/validating references against Razorpay is reconciliation's
+    -- job, not a storage constraint. See migrations/004.
+    razorpay_order_id   TEXT NOT NULL,
 
     amount              NUMERIC(14, 2) NOT NULL,
     currency            TEXT NOT NULL,

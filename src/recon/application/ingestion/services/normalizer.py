@@ -378,7 +378,13 @@ class MerchantSourceNormalizer:
             if isinstance(value, date):
                 return value
 
-            return date.fromisoformat(str(value))
+            text = str(value)
+            try:
+                return date.fromisoformat(text)
+            except ValueError:
+                # Some bank exports put a full ISO datetime (with time/offset)
+                # in what is otherwise a date-only column.
+                return datetime.fromisoformat(text).date()
 
         if field in {
             "created_at",

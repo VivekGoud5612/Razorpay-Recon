@@ -127,50 +127,61 @@ class MerchantIngestionPostgresRepository:
                 import_pk = import_row["id"]
                 source_pk = import_row["source_id"]
 
-                if entity_type == "merchant_order":
-                    await self._persist_orders(
-                        conn,
-                        import_pk,
-                        source_pk,
-                        records,
-                    )
+                try:
+                    if entity_type == "merchant_order":
+                        await self._persist_orders(
+                            conn,
+                            import_pk,
+                            source_pk,
+                            records,
+                        )
 
-                elif entity_type == "ledger_entry":
-                    await self._persist_ledger_entries(
-                        conn,
-                        import_pk,
-                        source_pk,
-                        records,
-                    )
+                    elif entity_type == "ledger_entry":
+                        await self._persist_ledger_entries(
+                            conn,
+                            import_pk,
+                            source_pk,
+                            records,
+                        )
 
-                elif entity_type == "bank_transaction":
-                    await self._persist_bank_transactions(
-                        conn,
-                        import_pk,
-                        source_pk,
-                        records,
-                    )
+                    elif entity_type == "bank_transaction":
+                        await self._persist_bank_transactions(
+                            conn,
+                            import_pk,
+                            source_pk,
+                            records,
+                        )
 
-                elif entity_type == "pos_transaction":
-                    await self._persist_pos_transactions(
-                        conn,
-                        import_pk,
-                        source_pk,
-                        records,
-                    )
+                    elif entity_type == "pos_transaction":
+                        await self._persist_pos_transactions(
+                            conn,
+                            import_pk,
+                            source_pk,
+                            records,
+                        )
 
-                elif entity_type == "gateway_transaction":
-                    await self._persist_gateway_transactions(
-                        conn,
-                        import_pk,
-                        source_pk,
-                        records,
-                    )
+                    elif entity_type == "gateway_transaction":
+                        await self._persist_gateway_transactions(
+                            conn,
+                            import_pk,
+                            source_pk,
+                            records,
+                        )
 
-                else:
+                    else:
+                        raise ValueError(
+                            f"Unsupported entity type: {entity_type}"
+                        )
+                except asyncpg.exceptions.UniqueViolationError as exc:
+                    # A duplicate within one import (e.g. the same
+                    # merchant_order_id twice in one merchant_orders.csv)
+                    # must stay detectable -- the constraint itself is not
+                    # weakened. This only translates the DB-level rejection
+                    # into a client-facing 400 (via the app's ValueError ->
+                    # HTTP mapping) instead of an unhandled 500.
                     raise ValueError(
-                        f"Unsupported entity type: {entity_type}"
-                    )
+                        f"Duplicate {entity_type} within this import: {exc}"
+                    ) from exc
 
     async def _persist_orders(
         self,
@@ -223,6 +234,14 @@ class MerchantIngestionPostgresRepository:
         source_pk: int,
         records: list[LedgerEntry],
     ) -> None:
+        # merchant_order_id is only unique per (import_pk, merchant_order_id)
+        # (uq_merchant_order_source) -- the same merchant order can
+        # legitimately be re-ingested under a fresh import_pk. Without
+        # ORDER BY/LIMIT this SELECT would join every same-named merchant
+        # order across every past import, producing one ledger_entries row
+        # per match and blowing the (import_pk, entry_id) unique constraint
+        # on re-ingestion. Taking the most recently ingested match keeps
+        # this idempotent/re-runnable.
         await conn.executemany(
             """
             INSERT INTO ledger_entries (
@@ -254,6 +273,8 @@ class MerchantIngestionPostgresRepository:
                 $11
             FROM merchant_orders mo
             WHERE mo.merchant_order_id = $12
+            ORDER BY mo.id DESC
+            LIMIT 1
             """,
             [
                 (

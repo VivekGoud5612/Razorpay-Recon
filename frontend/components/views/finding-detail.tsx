@@ -111,6 +111,18 @@ export function FindingDetail() {
               {finding.affected_entity.entity_type} <b className="mono">{finding.affected_entity.entity_id}</b>
             </div>
           </div>
+          <div className="impact">
+            <span>AI INVESTIGATION</span>
+            <button className="button primary" onClick={handleInvestigate} disabled={startInvestigation.isPending}>
+              {startInvestigation.isPending ? 'Starting…' : 'Investigate'}
+              <ArrowUpRight size={15} />
+            </button>
+            {startInvestigation.isError && (
+              <p className="form-error">
+                {startInvestigation.error instanceof ApiError ? startInvestigation.error.message : 'Investigation failed to start.'}
+              </p>
+            )}
+          </div>
         </div>
 
         <section className="deterministic">
@@ -205,17 +217,8 @@ export function FindingDetail() {
             <h2>Ready for investigation</h2>
             <p>
               Use the collected evidence to test hypotheses. AI proposals remain separate from the engine-verified
-              financial result.
+              financial result — use the Investigate action above to start.
             </p>
-            {startInvestigation.isError && (
-              <p className="form-error">
-                {startInvestigation.error instanceof ApiError ? startInvestigation.error.message : 'Investigation failed to start.'}
-              </p>
-            )}
-            <button className="button primary" onClick={handleInvestigate} disabled={startInvestigation.isPending}>
-              {startInvestigation.isPending ? 'Starting…' : 'Start investigation'}
-              <ArrowUpRight size={15} />
-            </button>
           </section>
         )}
       </main>
