@@ -175,3 +175,41 @@ def test_root_cause_with_missing_evidence_forces_abstention():
     assert result.should_abstain is True
     assert result.root_cause is None
     assert "required" in result.abstain_reason
+
+
+def test_missing_root_cause_forces_abstention_even_with_valid_hypotheses():
+    # Regression: a response can clear every hypothesis-level gate (valid
+    # evidence citations, confidence above threshold) yet still leave
+    # root_cause null while reporting should_abstain=False. Observed live
+    # against a real HuggingFace-hosted model response -- the policy must
+    # not pass that through as a grounded conclusion.
+    response = _response(root_cause=None, should_abstain=False)
+
+    result = InvestigationPolicy().validate(response, _package())
+
+    assert result.should_abstain is True
+    assert result.root_cause is None
+    assert "No root cause was established" in result.abstain_reason
+
+
+def test_confidence_outside_valid_range_forces_abstention():
+    # Regression: observed live against a real model response returning
+    # confidence=100.0 (a 0-100 scale) instead of the documented 0-1
+    # fraction. Must not be silently rescaled/trusted.
+    response = _response(
+        hypotheses=[
+            Hypothesis(
+                hypothesis_id="H1",
+                statement="Confidence reported on the wrong scale.",
+                supporting_evidence_ids=[VALID_EVIDENCE_ID],
+                confidence=100.0,
+            ),
+        ],
+        root_cause=RootCause(hypothesis_id="H1", confidence=100.0),
+    )
+
+    result = InvestigationPolicy().validate(response, _package())
+
+    assert result.should_abstain is True
+    assert result.root_cause is None
+    assert "valid 0-1 range" in result.abstain_reason
