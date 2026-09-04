@@ -12,7 +12,8 @@ import type { MerchantSourceId } from '@/lib/types/domain'
 // The fixed merchant source types the ingestion endpoint accepts (seeded in
 // the `sources` table). `hint` doubles as the exact filename the batch
 // endpoint dispatches on (SOURCE_BY_FILENAME in api/routes/ingestion.py) —
-// files are sent under that name regardless of the file's local name.
+// files are sent under that name regardless of the file's local name, and
+// it's also the exact filename we match a selected file against below.
 const SOURCE_SLOTS: { id: MerchantSourceId; label: string; hint: string }[] = [
   { id: 'merchant_orders', label: 'Orders', hint: 'merchant_orders.csv' },
   { id: 'merchant_ledger', label: 'Ledger', hint: 'ledger.csv' },
@@ -20,6 +21,10 @@ const SOURCE_SLOTS: { id: MerchantSourceId; label: string; hint: string }[] = [
   { id: 'merchant_pos', label: 'POS', hint: 'pos.csv' },
   { id: 'merchant_gateway', label: 'Other gateway', hint: 'other_gateway.csv' },
 ]
+
+const SLOT_BY_FILENAME: Record<string, MerchantSourceId> = Object.fromEntries(
+  SOURCE_SLOTS.map((slot) => [slot.hint, slot.id]),
+)
 
 // Best-effort tokens for attributing a failed batch ingestion back to the
 // slot that caused it — the backend's error text names either the exact
@@ -60,6 +65,7 @@ export function NewReconciliation() {
 
   const [settlementId, setSettlementId] = useState('')
   const [slots, setSlots] = useState<Record<MerchantSourceId, SlotState>>(initialSlots)
+  const [unmatchedFiles, setUnmatchedFiles] = useState<string[]>([])
   const [runError, setRunError] = useState<string | null>(null)
   const [phase, setPhase] = useState<Phase>('idle')
 
@@ -70,8 +76,28 @@ export function NewReconciliation() {
     setSlots((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }))
   }
 
-  const handleFileChange = (id: MerchantSourceId, file: File | null) => {
-    setSlot(id, { file, status: 'idle', importId: undefined, error: undefined })
+  // One multi-select input replaces the previous five separate file pickers.
+  // Routing is unchanged: a selected file is matched to a source purely by
+  // its exact filename (the same SOURCE_BY_FILENAME contract the backend
+  // batch endpoint itself dispatches on) — a file with any other name is
+  // left unmatched and reported, never guessed at.
+  const handleFilesSelected = (fileList: FileList | null) => {
+    if (!fileList) return
+
+    const unmatched: string[] = []
+    setSlots((prev) => {
+      const next = { ...prev }
+      for (const file of Array.from(fileList)) {
+        const slotId = SLOT_BY_FILENAME[file.name]
+        if (slotId) {
+          next[slotId] = { file, status: 'idle', importId: undefined, error: undefined }
+        } else {
+          unmatched.push(file.name)
+        }
+      }
+      return next
+    })
+    setUnmatchedFiles(unmatched)
   }
 
   const handleSubmit = async () => {
@@ -134,8 +160,9 @@ export function NewReconciliation() {
         </div>
         <Title eyebrow="NEW WORKSPACE" title="Start a reconciliation" />
         <p className="lead">
-          Enter the Razorpay settlement to reconcile, then select the merchant-side source files. All selected files are
-          sent to the backend in a single batch ingestion request before the deterministic engine runs.
+          Enter the Razorpay settlement to reconcile, then choose all of its merchant-side source files at once. Each file
+          is routed to a source by its exact filename and sent to the backend in a single batch ingestion request before
+          the deterministic engine runs.
         </p>
 
         <div className="field-row">
@@ -143,26 +170,48 @@ export function NewReconciliation() {
           <input
             id="settlement-id"
             type="text"
-            placeholder="e.g. SETL-S11-001"
+            placeholder="the settlement ID this data belongs to"
             value={settlementId}
             onChange={(e) => setSettlementId(e.target.value)}
             disabled={phase !== 'idle'}
           />
         </div>
 
-        <div className="source-picker">
+        <div className="upload-box">
+          <input
+            id="batch-files"
+            type="file"
+            accept=".csv"
+            multiple
+            disabled={phase !== 'idle'}
+            onChange={(e) => handleFilesSelected(e.target.files)}
+          />
+          <label htmlFor="batch-files">
+            <Upload size={22} />
+            Choose files
+            <span>Select all 5 source CSVs at once — merchant_orders.csv, ledger.csv, bank_statement.csv, pos.csv, other_gateway.csv</span>
+          </label>
+        </div>
+
+        {unmatchedFiles.length > 0 && (
+          <p className="form-error">
+            {unmatchedFiles.length} file{unmatchedFiles.length === 1 ? '' : 's'} didn&apos;t match any expected source
+            filename and were not selected: {unmatchedFiles.join(', ')}
+          </p>
+        )}
+
+        <div className="file-list">
           {SOURCE_SLOTS.map((slot) => {
             const state = slots[slot.id]
             return (
-              <div className={`source-slot ${state.status === 'done' ? 'filled' : ''}`} key={slot.id}>
-                <b>{slot.label}</b>
-                <span>{slot.hint}</span>
-                <input
-                  type="file"
-                  accept=".csv"
-                  disabled={phase !== 'idle'}
-                  onChange={(e) => handleFileChange(slot.id, e.target.files?.[0] ?? null)}
-                />
+              <div className="file-row" key={slot.id}>
+                <FileText size={16} />
+                <div>
+                  <b>{slot.label}</b>
+                  <span>{slot.hint}</span>
+                </div>
+                {!state.file && <span className="muted">Not selected</span>}
+                {state.file && state.status === 'idle' && <span>Selected</span>}
                 {state.status === 'uploading' && <span>Uploading…</span>}
                 {state.status === 'done' && (
                   <span>
