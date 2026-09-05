@@ -2,10 +2,18 @@ from __future__ import annotations
 
 from typing import Any
 
-from recon.application.investigation.ports.document_provider import DocumentProvider
+from recon.application.ingestion.ports.object_storage import ObjectStorage
 
 
 class DocumentTools:
+    """Retrieves the raw merchant source file (the whole uploaded CSV/JSON
+    blob) backing an object_key already present in an EvidenceRef.
+
+    This class itself is unscoped -- it will fetch any object_key that
+    exists in the configured object store. Callers (LLMInvestigator) are
+    responsible for only exposing it, via tool_handlers, for object_keys
+    that belong to the current investigation's EvidencePackage.
+    """
 
     def __init__(self, storage: ObjectStorage) -> None:
         self._storage = storage

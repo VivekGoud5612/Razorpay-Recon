@@ -334,6 +334,7 @@ CREATE TABLE pos_transactions (
     id                  BIGSERIAL PRIMARY KEY,
 
     source_id           BIGINT NOT NULL REFERENCES sources(id),
+    import_pk           BIGINT NOT NULL REFERENCES merchant_imports(id),
 
     transaction_id      TEXT NOT NULL,
     merchant_order_id   TEXT NOT NULL,
@@ -346,12 +347,15 @@ CREATE TABLE pos_transactions (
     status              TEXT NOT NULL,
     terminal_id         TEXT NOT NULL,
 
-    CONSTRAINT uq_pos_transaction_source
-        UNIQUE (source_id, transaction_id)
+    CONSTRAINT uq_pos_transaction_import
+        UNIQUE (import_pk, transaction_id)
 );
 
 CREATE INDEX idx_pos_transactions_source
     ON pos_transactions(source_id);
+
+CREATE INDEX idx_pos_transactions_import
+    ON pos_transactions(import_pk);
 
 CREATE INDEX idx_pos_transactions_merchant_order
     ON pos_transactions(merchant_order_id);
@@ -365,6 +369,7 @@ CREATE TABLE gateway_transactions (
     id                      BIGSERIAL PRIMARY KEY,
 
     source_id               BIGINT NOT NULL REFERENCES sources(id),
+    import_pk               BIGINT NOT NULL REFERENCES merchant_imports(id),
 
     transaction_id          TEXT NOT NULL,
     merchant_order_id       TEXT NOT NULL,
@@ -379,12 +384,15 @@ CREATE TABLE gateway_transactions (
     status                  TEXT NOT NULL,
     created_at              TIMESTAMPTZ NOT NULL,
 
-    CONSTRAINT uq_gateway_transaction_source
-        UNIQUE (source_id, transaction_id)
+    CONSTRAINT uq_gateway_transaction_import
+        UNIQUE (import_pk, transaction_id)
 );
 
 CREATE INDEX idx_gateway_transactions_source
     ON gateway_transactions(source_id);
+
+CREATE INDEX idx_gateway_transactions_import
+    ON gateway_transactions(import_pk);
 
 CREATE INDEX idx_gateway_transactions_merchant_order
     ON gateway_transactions(merchant_order_id);

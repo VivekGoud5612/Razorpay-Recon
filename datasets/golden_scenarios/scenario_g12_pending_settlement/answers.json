@@ -1,0 +1,15 @@
+{
+  "scenario_id": "SETL-G12",
+  "name": "pending_settlement",
+  "expected_status": "PENDING",
+  "expected_findings": [],
+  "expected_amounts": {
+    "razorpay_status": "pending",
+    "bank_observed": "0.00"
+  },
+  "investigation_required": false,
+  "investigation_mode": "NOT_REQUIRED",
+  "root_cause_statement": "",
+  "evidence_notes": "Settlement status explicitly 'pending' on the Razorpay side \u2014 no bank credit is expected yet, this is not a discrepancy.",
+  "engine_capability_required": "Engine must distinguish settlement_status='pending' from a genuinely missing bank transaction on a processed settlement (see G10). If the current engine cannot read/respect settlement status, mark this ENGINE_CAPABILITY_REQUIRED and do not force a fix tonight."
+}

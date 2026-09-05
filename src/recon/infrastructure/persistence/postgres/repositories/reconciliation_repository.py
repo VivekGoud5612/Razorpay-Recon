@@ -70,8 +70,8 @@ class ReconcileSettlementPostgresRepository:
                     if entry.settlement_utr
                 },
             )
-            pos_transactions = await self._get_pos_transactions(conn, merchant_order_pks)
-            gateway_transactions = await self._get_gateway_transactions(conn, merchant_order_pks)
+            pos_transactions = await self._get_pos_transactions(conn, import_db_ids)
+            gateway_transactions = await self._get_gateway_transactions(conn, import_db_ids)
 
             object_keys, entity_imports = await self._get_import_metadata(conn, import_ids)
 
@@ -246,12 +246,27 @@ class ReconcileSettlementPostgresRepository:
         conn: asyncpg.Connection,
         utrs: set[str],
     ):
+        # Matched by UTR only, deliberately not import-scoped: a merchant's
+        # bank statement is not tied 1:1 to one ingestion batch the way
+        # merchant_orders/ledger/POS/gateway are (RELATION_RULES' own
+        # settlement<->bank_transaction edge is UTR-keyed for the same
+        # reason). But re-ingesting the identical statement file (e.g. this
+        # scenario re-run from a clean merchant state, or a merchant simply
+        # re-uploading a rolling statement that repeats prior days) creates
+        # a genuinely new row each time under a fresh import_pk -- with no
+        # dedup, that silently inflates the observed total on every re-run.
+        # DISTINCT ON collapses rows that are identical in every financial
+        # respect (same utr/debit/credit/date) down to one -- an exact-value
+        # match, not fuzzy: two bank rows for the same UTR that actually
+        # differ in amount or date are NOT collapsed, and still surface as
+        # two real rows for BANK_SETTLEMENT_AMOUNT_DIFFERENCE to reason
+        # about.
         if not utrs:
             return []
 
         rows = await conn.fetch(
             """
-            SELECT
+            SELECT DISTINCT ON (utr, transaction_date, debit, credit)
                 transaction_id,
                 utr,
                 transaction_date,
@@ -263,6 +278,7 @@ class ReconcileSettlementPostgresRepository:
                 reference
             FROM bank_transactions
             WHERE utr = ANY($1::text[])
+            ORDER BY utr, transaction_date, debit, credit, id DESC
             """,
             list(utrs),
         )
@@ -414,9 +430,16 @@ class ReconcileSettlementPostgresRepository:
     async def _get_pos_transactions(
         self,
         conn: asyncpg.Connection,
-        merchant_order_pks: list[int],
+        import_db_ids: list[int],
     ):
-        if not merchant_order_pks:
+        # Scoped by the transaction's own import_pk (a real FK, populated
+        # at ingestion time) rather than by joining on merchant_order_id
+        # TEXT equality against merchant_orders -- that text value is not
+        # globally unique (different settlements/imports can legitimately
+        # both have an order named e.g. "MORD-01"), so a text join here
+        # silently pulled in another settlement's POS rows whenever their
+        # merchant_order_id happened to collide. import_pk is unambiguous.
+        if not import_db_ids:
             return []
 
         rows = await conn.fetch(
@@ -431,11 +454,9 @@ class ReconcileSettlementPostgresRepository:
                 pt.status,
                 pt.terminal_id
             FROM pos_transactions pt
-            JOIN merchant_orders mo
-                ON mo.merchant_order_id = pt.merchant_order_id
-            WHERE mo.id = ANY($1::bigint[])
+            WHERE pt.import_pk = ANY($1::bigint[])
             """,
-            merchant_order_pks,
+            import_db_ids,
         )
 
         return [
@@ -447,9 +468,10 @@ class ReconcileSettlementPostgresRepository:
     async def _get_gateway_transactions(
         self,
         conn: asyncpg.Connection,
-        merchant_order_pks: list[int],
+        import_db_ids: list[int],
     ):
-        if not merchant_order_pks:
+        # See _get_pos_transactions -- same fix, same reason.
+        if not import_db_ids:
             return []
 
         rows = await conn.fetch(
@@ -465,11 +487,9 @@ class ReconcileSettlementPostgresRepository:
                 gt.status,
                 gt.created_at
             FROM gateway_transactions gt
-            JOIN merchant_orders mo
-                ON mo.merchant_order_id = gt.merchant_order_id
-            WHERE mo.id = ANY($1::bigint[])
+            WHERE gt.import_pk = ANY($1::bigint[])
             """,
-            merchant_order_pks,
+            import_db_ids,
         )
 
         return [

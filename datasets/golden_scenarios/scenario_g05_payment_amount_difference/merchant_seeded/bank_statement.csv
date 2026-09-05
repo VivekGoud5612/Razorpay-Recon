@@ -1,0 +1,2 @@
+transaction_id,utr,transaction_date,description,debit,credit
+BTX-SCENARIO_G05_PAYMENT_AMOUNT_DIFFERENCE-0001,UTR-G05-001,2026-08-12,Settlement credit - SETL-G05,0.00,624087.53

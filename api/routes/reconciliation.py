@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from recon.application.reconciliation.dto.graph import GraphResponse
 from recon.application.reconciliation.dto.request import ReconcileSettlementRequest
-from recon.application.reconciliation.dto.response import ReconcileSettlementResponse
+from recon.application.reconciliation.dto.response import EvidenceDetail, ReconcileSettlementResponse
 from recon.application.reconciliation.dto.run import ReconciliationRunResponse
 from recon.application.reconciliation.use_cases.get_finding import GetFindingUseCase
 from recon.application.reconciliation.use_cases.get_graph import GetReconciliationGraphUseCase
@@ -11,7 +11,6 @@ from recon.application.reconciliation.use_cases.list_evidence import ListEvidenc
 from recon.application.reconciliation.use_cases.list_findings import ListFindingsUseCase
 from recon.application.reconciliation.use_cases.list_reconciliations import ListReconciliationsUseCase
 from recon.application.reconciliation.use_cases.reconcile_settlement import ReconcileSettlementUseCase
-from recon.domain.reconciliation.evidence import EvidenceRef
 from recon.domain.reconciliation.finding import ReconciliationFinding
 
 from api.dependencies import (
@@ -75,12 +74,12 @@ async def get_finding(
 
 @router.get(
     "/settlements/{settlement_id}/evidence",
-    response_model=list[EvidenceRef],
+    response_model=list[EvidenceDetail],
 )
 async def list_evidence(
     settlement_id: str,
     use_case: ListEvidenceUseCase = Depends(list_evidence_use_case),
-) -> list[EvidenceRef]:
+) -> list[EvidenceDetail]:
     return await use_case.execute(settlement_id)
 
 

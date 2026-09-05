@@ -73,6 +73,12 @@ export interface Evidence {
   entity_id: string
   reason: string
   object_key: string | null
+  /** The persisted source record this evidence item points to (exact
+   * entity_type/entity_id lookup). Only GET .../evidence populates this;
+   * evidence embedded in a Finding does not carry it, hence optional --
+   * `undefined` means "not fetched here" (see Evidence Explorer instead),
+   * `null` means "fetched, and no backing record exists". */
+  data?: Record<string, unknown> | null
 }
 
 // ---------------------------------------------------------------------------

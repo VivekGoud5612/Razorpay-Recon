@@ -1,0 +1,15 @@
+{
+  "scenario_id": "SETL-G02",
+  "name": "clean_multi_payment",
+  "expected_status": "RECONCILED",
+  "expected_findings": [],
+  "expected_amounts": {
+    "razorpay_net": "378380.40",
+    "bank_observed": "378380.40"
+  },
+  "investigation_required": false,
+  "investigation_mode": "NOT_REQUIRED",
+  "root_cause_statement": "",
+  "evidence_notes": "",
+  "engine_capability_required": null
+}

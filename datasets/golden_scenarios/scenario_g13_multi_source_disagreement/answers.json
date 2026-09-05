@@ -1,0 +1,22 @@
+{
+  "scenario_id": "SETL-G13",
+  "name": "multi_source_disagreement",
+  "expected_status": "EXCEPTION",
+  "expected_findings": [
+    {
+      "code": "MULTI_SOURCE_DISAGREEMENT",
+      "entity": "merchant_order",
+      "entity_id": "MORD-01"
+    }
+  ],
+  "expected_amounts": {
+    "razorpay_amount": "24000.00",
+    "pos_amount": "23500.00",
+    "other_gateway_amount": "24600.00"
+  },
+  "investigation_required": true,
+  "investigation_mode": "ABSTAINED",
+  "root_cause_statement": "",
+  "evidence_notes": "Three independent sources (ledger, POS, other-gateway) report three different amounts for the same order, with no fourth source or metadata to determine which is authoritative beyond Razorpay's own record \u2014 genuinely conflicting evidence.",
+  "engine_capability_required": null
+}

@@ -1,0 +1,18 @@
+{
+  "dataset_id": "rich_recon_60",
+  "settlement_id": "SETL-RICH-001",
+  "ground_truth": {
+    "razorpay_vs_bank_baseline": "match_except controlled bank short-settlement record",
+    "merchant_order_amount_mismatch": "MORD-RICH-0008",
+    "ledger_over": "MORD-RICH-0011",
+    "pos_amount_mismatch": "MORD-RICH-0020",
+    "gateway_amount_mismatch": "MORD-RICH-0030",
+    "bank_short_settlement": "MORD-RICH-0040"
+  },
+  "notes": [
+    "Razorpay data is the clean/reference side.",
+    "Merchant files contain controlled anomalies.",
+    "Bank credit equals payment net amount except the controlled short-settlement record.",
+    "Payment net = gross amount - fee - tax."
+  ]
+}

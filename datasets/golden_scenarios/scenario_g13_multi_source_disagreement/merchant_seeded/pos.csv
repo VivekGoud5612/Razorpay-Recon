@@ -1,0 +1,2 @@
+pos_transaction_id,merchant_order_id,amount,currency,transaction_date,status,terminal_id
+POS-SCENARIO_G13_MULTI_SOURCE_DISAGREEMENT-0001,MORD-01,23500.00,INR,2026-08-16,captured,TERM-SCENARIO_G13_MULTI_SOURCE_DISAGREEMENT

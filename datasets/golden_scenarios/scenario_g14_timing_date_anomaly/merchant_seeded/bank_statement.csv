@@ -1,0 +1,2 @@
+transaction_id,utr,transaction_date,description,debit,credit
+BTX-SCENARIO_G14_TIMING_DATE_ANOMALY-0001,UTR-G14-001,2026-08-20,Settlement credit - SETL-G14,0.00,426035.53

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from recon.application.reconciliation.dto.response import EvidenceDetail
 from recon.application.reconciliation.ports.result_repository import ReconciliationResultRepository
-from recon.domain.reconciliation.evidence import EvidenceRef
 
 
 class ListEvidenceUseCase:
@@ -15,5 +15,5 @@ class ListEvidenceUseCase:
     async def execute(
         self,
         settlement_id: str,
-    ) -> list[EvidenceRef]:
+    ) -> list[EvidenceDetail]:
         return await self._result_repository.list_evidence(settlement_id)

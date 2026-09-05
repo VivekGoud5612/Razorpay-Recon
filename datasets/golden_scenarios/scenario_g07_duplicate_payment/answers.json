@@ -1,0 +1,21 @@
+{
+  "scenario_id": "SETL-G07",
+  "name": "duplicate_payment",
+  "expected_status": "EXCEPTION",
+  "expected_findings": [
+    {
+      "code": "DUPLICATE_PAYMENT",
+      "entity": "payment",
+      "entity_id": "pay_g07_01"
+    }
+  ],
+  "expected_amounts": {
+    "duplicated_payment_id": "pay_g07_01",
+    "duplicate_count": "2"
+  },
+  "investigation_required": true,
+  "investigation_mode": "GROUNDED",
+  "root_cause_statement": "ledger.csv references razorpay_payment_id pay_g07_01 twice under two order_refs \u2014 a single real payment double-booked in the merchant's ledger.",
+  "evidence_notes": "Both ledger.csv rows, the single matching Razorpay payment.",
+  "engine_capability_required": null
+}

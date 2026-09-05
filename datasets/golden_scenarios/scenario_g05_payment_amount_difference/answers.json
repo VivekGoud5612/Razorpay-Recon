@@ -1,0 +1,22 @@
+{
+  "scenario_id": "SETL-G05",
+  "name": "payment_amount_difference",
+  "expected_status": "EXCEPTION",
+  "expected_findings": [
+    {
+      "code": "PAYMENT_AMOUNT_MISMATCH",
+      "entity": "merchant_order",
+      "entity_id": "MORD-01"
+    }
+  ],
+  "expected_amounts": {
+    "razorpay_payment_amount": "22000.00",
+    "merchant_claimed_amount": "23200.00",
+    "delta": "1200.00"
+  },
+  "investigation_required": true,
+  "investigation_mode": "GROUNDED",
+  "root_cause_statement": "Merchant's order-level record overstates the payment amount by \u20b91200.00 versus the Razorpay-confirmed payment; ledger.csv for the same order agrees with Razorpay, isolating the discrepancy to merchant_orders.csv specifically.",
+  "evidence_notes": "razorpay payment record, merchant_orders.csv row, ledger.csv row (which agrees with Razorpay) as a cross-check.",
+  "engine_capability_required": null
+}

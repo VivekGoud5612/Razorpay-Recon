@@ -1,0 +1,162 @@
+[
+  {
+    "scenario_id": "SETL-G01",
+    "name": "clean_single_payment",
+    "directory": "scenario_g01_clean_single_payment",
+    "business_purpose": "Simplest possible clean case: one order, one payment, settlement matches exactly.",
+    "expected_status": "RECONCILED",
+    "primary_finding": null,
+    "investigation_mode": "NOT_REQUIRED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G02",
+    "name": "clean_multi_payment",
+    "directory": "scenario_g02_clean_multi_payment",
+    "business_purpose": "Five clean orders aggregated into one settlement \u2014 proves batch aggregation math.",
+    "expected_status": "RECONCILED",
+    "primary_finding": null,
+    "investigation_mode": "NOT_REQUIRED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G03",
+    "name": "clean_with_refund",
+    "directory": "scenario_g03_clean_with_refund",
+    "business_purpose": "Four orders, one partially refunded \u2014 net settlement correctly nets the refund.",
+    "expected_status": "RECONCILED",
+    "primary_finding": null,
+    "investigation_mode": "NOT_REQUIRED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G04",
+    "name": "merchant_ledger_amount_difference",
+    "directory": "scenario_g04_merchant_ledger_amount_difference",
+    "business_purpose": "Merchant's own ledger records a different gross amount than Razorpay's order/payment \u2014 a bookkeeping drift, not a Razorpay-side problem.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "MERCHANT_LEDGER_AMOUNT_MISMATCH",
+    "investigation_mode": "GROUNDED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G05",
+    "name": "payment_amount_difference",
+    "directory": "scenario_g05_payment_amount_difference",
+    "business_purpose": "Merchant's order-level record (not ledger) disagrees with the actual Razorpay payment amount \u2014 a different source than G04.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "PAYMENT_AMOUNT_MISMATCH",
+    "investigation_mode": "GROUNDED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G06",
+    "name": "duplicate_order",
+    "directory": "scenario_g06_duplicate_order",
+    "business_purpose": "Merchant accidentally uploads the same order twice in merchant_orders.csv.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "DUPLICATE_ORDER",
+    "investigation_mode": "GROUNDED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G07",
+    "name": "duplicate_payment",
+    "directory": "scenario_g07_duplicate_payment",
+    "business_purpose": "Merchant ledger references the same razorpay_payment_id twice \u2014 distinct from a duplicate order.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "DUPLICATE_PAYMENT",
+    "investigation_mode": "GROUNDED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G08",
+    "name": "razorpay_order_not_found",
+    "directory": "scenario_g08_razorpay_order_not_found",
+    "business_purpose": "Merchant references an order ID that genuinely does not exist anywhere in Razorpay's records.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "RAZORPAY_ORDER_NOT_FOUND",
+    "investigation_mode": "ABSTAINED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G09",
+    "name": "bank_settlement_amount_difference",
+    "directory": "scenario_g09_bank_settlement_amount_difference",
+    "business_purpose": "Bank-credited amount differs from Razorpay's computed net settlement \u2014 a fee/tax drift, not a reference problem.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "BANK_SETTLEMENT_AMOUNT_DIFFERENCE",
+    "investigation_mode": "GROUNDED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G10",
+    "name": "missing_bank_transaction",
+    "directory": "scenario_g10_missing_bank_transaction",
+    "business_purpose": "Settlement and orders are fully valid Razorpay-side, but the bank statement has zero rows for it \u2014 genuinely missing, not a wrong reference.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "BANK_TRANSACTION_MISSING",
+    "investigation_mode": "GROUNDED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G11",
+    "name": "wrong_reference_mapping",
+    "directory": "scenario_g11_wrong_reference_mapping",
+    "business_purpose": "Merchant ledger references a real, existing Razorpay payment \u2014 but the WRONG one, swapped with another real order's payment.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "WRONG_PAYMENT_REFERENCE",
+    "investigation_mode": "GROUNDED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G12",
+    "name": "pending_settlement",
+    "directory": "scenario_g12_pending_settlement",
+    "business_purpose": "Settlement has not yet been processed/credited \u2014 a timing state, not an error.",
+    "expected_status": "PENDING",
+    "primary_finding": null,
+    "investigation_mode": "NOT_REQUIRED",
+    "engine_capability_required": true
+  },
+  {
+    "scenario_id": "SETL-G13",
+    "name": "multi_source_disagreement",
+    "directory": "scenario_g13_multi_source_disagreement",
+    "business_purpose": "Ledger, POS, and other-gateway records for the same order all report different amounts \u2014 genuine multi-source conflict.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "MULTI_SOURCE_DISAGREEMENT",
+    "investigation_mode": "ABSTAINED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G14",
+    "name": "timing_date_anomaly",
+    "directory": "scenario_g14_timing_date_anomaly",
+    "business_purpose": "Bank credit arrives dated far outside the expected T+2 settlement window from capture.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "SETTLEMENT_TIMING_ANOMALY",
+    "investigation_mode": "GROUNDED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G15",
+    "name": "grounded_unambiguous_reference_fix",
+    "directory": "scenario_g15_grounded_unambiguous_reference_fix",
+    "business_purpose": "Dedicated unambiguous case for testing confident AI resolution \u2014 amount, date, and UTR all uniquely identify the correct order despite a typo'd reference.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "WRONG_ORDER_REFERENCE",
+    "investigation_mode": "GROUNDED",
+    "engine_capability_required": false
+  },
+  {
+    "scenario_id": "SETL-G16",
+    "name": "abstain_genuine_ambiguity",
+    "directory": "scenario_g16_abstain_genuine_ambiguity",
+    "business_purpose": "Dedicated ambiguous case for testing correct abstention \u2014 two real orders share identical amount AND identical date, so a reference fault cannot be uniquely resolved.",
+    "expected_status": "EXCEPTION",
+    "primary_finding": "AMBIGUOUS_MATCH",
+    "investigation_mode": "ABSTAINED",
+    "engine_capability_required": false
+  }
+]

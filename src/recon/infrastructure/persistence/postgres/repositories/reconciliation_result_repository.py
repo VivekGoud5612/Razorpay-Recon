@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import asyncpg
 
-from recon.application.reconciliation.dto.response import ReconcileSettlementResponse
+from recon.application.reconciliation.dto.response import EvidenceDetail, ReconcileSettlementResponse
 from recon.application.reconciliation.dto.run import ReconciliationRunResponse
 from recon.application.reconciliation.ports.result_repository import ReconciliationResultRepository
 from recon.domain.graph.entity import EntityReference
 from recon.domain.reconciliation.evidence import EvidenceRef
 from recon.domain.reconciliation.finding import ReconciliationFinding
+from recon.infrastructure.persistence.postgres.entity_records import (
+    fetch_entity_record,
+    resolve_import_pks,
+)
 
 
 class ReconciliationPostgresResultRepository(ReconciliationResultRepository):
@@ -310,7 +314,7 @@ class ReconciliationPostgresResultRepository(ReconciliationResultRepository):
     async def list_evidence(
         self,
         settlement_id: str,
-    ) -> list[EvidenceRef]:
+    ) -> list[EvidenceDetail]:
         async with self._db.acquire() as conn:
             rows = await conn.fetch(
                 """
@@ -328,17 +332,25 @@ class ReconciliationPostgresResultRepository(ReconciliationResultRepository):
                 settlement_id,
             )
 
-        return [
-            EvidenceRef(
-                evidence_id=row["evidence_id"],
-                source=row["source"],
-                entity_type=row["entity_type"],
-                entity_id=row["entity_id"],
-                reason=row["reason"],
-                object_key=row["object_key"],
-            )
-            for row in rows
-        ]
+            import_pks = await resolve_import_pks(conn, settlement_id)
+
+            return [
+                EvidenceDetail(
+                    evidence_id=row["evidence_id"],
+                    source=row["source"],
+                    entity_type=row["entity_type"],
+                    entity_id=row["entity_id"],
+                    reason=row["reason"],
+                    object_key=row["object_key"],
+                    data=await fetch_entity_record(
+                        conn,
+                        row["entity_type"],
+                        row["entity_id"],
+                        import_pks=import_pks or None,
+                    ),
+                )
+                for row in rows
+            ]
 
     @staticmethod
     def _map_run(row: asyncpg.Record) -> ReconciliationRunResponse:

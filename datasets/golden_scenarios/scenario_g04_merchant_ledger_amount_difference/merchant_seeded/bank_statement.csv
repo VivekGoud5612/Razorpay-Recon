@@ -1,0 +1,2 @@
+transaction_id,utr,transaction_date,description,debit,credit
+BTX-SCENARIO_G04_MERCHANT_LEDGER_AMOUNT_DIFFERENCE-0001,UTR-G04-001,2026-08-12,Settlement credit - SETL-G04,0.00,387916.89

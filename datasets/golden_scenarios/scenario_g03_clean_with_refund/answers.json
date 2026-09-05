@@ -1,0 +1,16 @@
+{
+  "scenario_id": "SETL-G03",
+  "name": "clean_with_refund",
+  "expected_status": "RECONCILED",
+  "expected_findings": [],
+  "expected_amounts": {
+    "razorpay_net": "411146.87",
+    "bank_observed": "411146.87",
+    "refund_amount": "3000.00"
+  },
+  "investigation_required": false,
+  "investigation_mode": "NOT_REQUIRED",
+  "root_cause_statement": "",
+  "evidence_notes": "",
+  "engine_capability_required": null
+}

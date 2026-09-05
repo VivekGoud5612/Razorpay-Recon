@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from typing import Any
 
 import asyncpg
 
@@ -17,12 +18,32 @@ from recon.domain.graph.graph import ReconciliationGraph
 from recon.domain.graph.node import GraphNode
 from recon.domain.reconciliation.evidence import EvidenceRef
 from recon.domain.reconciliation.finding import ReconciliationFinding
+from recon.infrastructure.persistence.postgres.entity_records import (
+    fetch_entity_record,
+    resolve_import_pks,
+)
 
 
 class InvestigationPostgresRepository(InvestigationRepository):
 
     def __init__(self, db) -> None:
         self._db = db
+
+    async def get_entity_record(
+        self,
+        source: str,
+        entity_type: str,
+        entity_id: str,
+        settlement_id: str,
+    ) -> dict[str, Any] | None:
+        async with self._db.acquire() as conn:
+            import_pks = await resolve_import_pks(conn, settlement_id)
+            return await fetch_entity_record(
+                conn,
+                entity_type,
+                entity_id,
+                import_pks=import_pks or None,
+            )
 
     async def get_graph(self, settlement_id: str) -> ReconciliationGraph:
         async with self._db.acquire() as conn:

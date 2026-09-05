@@ -44,6 +44,62 @@ function attributeError(message: string): MerchantSourceId | null {
   return matches.length === 1 ? matches[0].id : null
 }
 
+/**
+ * The backend translates a within-import unique-constraint violation
+ * (`uq_merchant_order_source`) into a 400 whose `detail` is a raw Postgres
+ * message — accurate, but reads like a crash dump. This is a deliberate,
+ * intentional validation boundary (the platform correctly refuses to
+ * ingest a file that records the same order id twice), not a system
+ * failure, so it deserves an explanation rather than DB internals as the
+ * primary message. The raw detail is never hidden — it's kept, verbatim,
+ * behind a disclosure for anyone who needs it.
+ */
+interface IngestionErrorDisplay {
+  headline: string
+  detail: string
+  isDuplicate: boolean
+}
+
+function describeIngestionError(message: string): IngestionErrorDisplay {
+  const duplicateMatch = message.match(
+    /duplicate key value violates unique constraint "uq_merchant_order_source"[\s\S]*?\(import_pk, merchant_order_id\)=\(([^,]+),\s*([^)]+)\)/i,
+  )
+
+  if (duplicateMatch) {
+    const [, , duplicateId] = duplicateMatch
+    return {
+      headline: `Rejected: order ID "${duplicateId}" appears more than once in this file. Each merchant_orders.csv must assign every order a unique ID — the platform intentionally refuses to ingest a file that reuses one, rather than silently picking a row to keep.`,
+      detail: message,
+      isDuplicate: true,
+    }
+  }
+
+  if (message.toLowerCase().includes('duplicate merchant_order within this import')) {
+    return {
+      headline:
+        'Rejected: this file records the same order ID more than once. The platform intentionally refuses to ingest a file with a duplicate order ID, rather than silently picking a row to keep.',
+      detail: message,
+      isDuplicate: true,
+    }
+  }
+
+  return { headline: message, detail: message, isDuplicate: false }
+}
+
+function IngestionErrorMessage({ message }: { message: string }) {
+  const { headline, detail, isDuplicate } = describeIngestionError(message)
+  return (
+    <span className="form-error ingestion-error">
+      {isDuplicate && <b className="ingestion-error-tag">Duplicate order ID — rejected by design</b>}
+      <span>{headline}</span>
+      <details>
+        <summary>Raw backend response</summary>
+        <pre className="ingestion-error-raw">{detail}</pre>
+      </details>
+    </span>
+  )
+}
+
 type SlotStatus = 'idle' | 'uploading' | 'done' | 'error'
 type Phase = 'idle' | 'ingesting' | 'running' | 'complete'
 
@@ -218,7 +274,9 @@ export function NewReconciliation() {
                     <FileText size={12} /> {state.importId}
                   </span>
                 )}
-                {state.status === 'error' && <span className="form-error">{state.error}</span>}
+                {state.status === 'error' && state.error && (
+                  <IngestionErrorMessage message={state.error} />
+                )}
               </div>
             )
           })}

@@ -1,3 +1,5 @@
+import asyncio
+
 from recon.application.investigation.services.evidence_builder import EvidenceBuilder
 from recon.domain.graph.edge import GraphEdge
 from recon.domain.graph.entity import EntityReference
@@ -5,6 +7,25 @@ from recon.domain.graph.graph import ReconciliationGraph
 from recon.domain.graph.node import GraphNode
 from recon.domain.reconciliation.evidence import EvidenceRef
 from recon.domain.reconciliation.finding import ReconciliationFinding
+
+
+class _FakeRecords:
+    """Stand-in for InvestigationRepository.get_entity_record(). These tests
+    exercise evidence/graph-traversal wiring, not record content, so no
+    entity has a backing record -- build() must tolerate that (records stays
+    empty) rather than require it.
+    """
+
+    async def get_entity_record(self, source, entity_type, entity_id, settlement_id):
+        return None
+
+
+def _build(graph, findings, depth):
+    return asyncio.run(
+        EvidenceBuilder(graph, _FakeRecords(), settlement_id="SETL-TEST").build(
+            findings=findings, depth=depth
+        )
+    )
 
 
 def _node(node_id: str, source: str, entity_type: str, entity_id: str) -> GraphNode:
@@ -97,7 +118,7 @@ def test_selected_finding_and_its_evidence_are_included():
     graph = _build_graph()
     finding = _finding_for_mord_1()
 
-    package = EvidenceBuilder(graph).build(findings=[finding], depth=2)
+    package = _build(graph, [finding], 2)
 
     assert package.findings == [finding]
     assert len(package.evidence) == 1
@@ -108,7 +129,7 @@ def test_evidence_ids_remain_stable():
     graph = _build_graph()
     finding = _finding_for_mord_1()
 
-    package = EvidenceBuilder(graph).build(findings=[finding], depth=2)
+    package = _build(graph, [finding], 2)
 
     # The evidence_id emitted by the deterministic reconciliation service
     # must survive untouched through the builder (the LLM prompt and the
@@ -120,7 +141,7 @@ def test_graph_traversal_uses_the_requested_depth():
     graph = _build_graph()
     finding = _finding_for_mord_1()
 
-    package = EvidenceBuilder(graph).build(findings=[finding], depth=2)
+    package = _build(graph, [finding], 2)
     node_ids = {n.node_id for n in package.nodes}
     edge_ids = {e.edge_id for e in package.edges}
 
@@ -140,7 +161,7 @@ def test_graph_traversal_depth_is_configurable():
     graph = _build_graph()
     finding = _finding_for_mord_1()
 
-    package = EvidenceBuilder(graph).build(findings=[finding], depth=3)
+    package = _build(graph, [finding], 3)
     node_ids = {n.node_id for n in package.nodes}
 
     # With depth=3, D becomes reachable.
@@ -154,7 +175,7 @@ def test_unrelated_evidence_and_nodes_are_not_pulled_in():
 
     # Only `selected` is passed to build() — as InvestigateExceptionUseCase
     # does for the findings the caller actually chose to investigate.
-    package = EvidenceBuilder(graph).build(findings=[selected], depth=2)
+    package = _build(graph, [selected], 2)
 
     evidence_ids = {e.evidence_id for e in package.evidence}
     node_ids = {n.node_id for n in package.nodes}
@@ -178,7 +199,7 @@ def test_duplicate_evidence_across_findings_is_deduplicated():
         evidence=list(finding.evidence),
     )
 
-    package = EvidenceBuilder(graph).build(findings=[finding, duplicate], depth=2)
+    package = _build(graph, [finding, duplicate], 2)
 
     assert len(package.evidence) == 1
 
@@ -202,12 +223,18 @@ def test_evidence_without_a_matching_graph_node_is_kept_but_does_not_seed_traver
         evidence=[evidence],
     )
 
-    package = EvidenceBuilder(graph).build(findings=[finding], depth=2)
+    package = _build(graph, [finding], 2)
 
-    # The evidence reference is still reported...
-    assert package.evidence == [evidence]
-    # ...but since no graph node exists for it, it contributes nothing to
-    # the traversal (no crash, no phantom node/edge).
+    # The evidence reference is still reported, plus a back-filled record
+    # request for the finding's own affected_entity (the settlement itself),
+    # since nothing in finding.evidence already covers that entity.
+    assert evidence in package.evidence
+    assert len(package.evidence) == 2
+    synthetic = next(e for e in package.evidence if e.entity_type == "settlement")
+    assert synthetic.entity_id == "SETL-1"
+    assert synthetic.reason == "BANK_TRANSACTION_MISSING"
+    # ...but since no graph node exists for either, they contribute nothing
+    # to the traversal (no crash, no phantom node/edge).
     assert package.nodes == []
     assert package.edges == []
 
@@ -216,7 +243,7 @@ def test_evidence_package_satisfies_investigation_service_input_contract():
     graph = _build_graph()
     finding = _finding_for_mord_1()
 
-    package = EvidenceBuilder(graph).build(findings=[finding], depth=2)
+    package = _build(graph, [finding], 2)
 
     # InvestigationService/LLMInvestigator/InvestigationPolicy all read
     # these five fields off the package; each must be present and typed

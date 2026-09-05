@@ -1,0 +1,20 @@
+{
+  "scenario_id": "SETL-G08",
+  "name": "razorpay_order_not_found",
+  "expected_status": "EXCEPTION",
+  "expected_findings": [
+    {
+      "code": "RAZORPAY_ORDER_NOT_FOUND",
+      "entity": "merchant_order",
+      "entity_id": "MORD-03"
+    }
+  ],
+  "expected_amounts": {
+    "unresolved_claimed_amount": "8900.00"
+  },
+  "investigation_required": true,
+  "investigation_mode": "ABSTAINED",
+  "root_cause_statement": "",
+  "evidence_notes": "Merchant claims an order/payment ID that has no counterpart anywhere in Razorpay's data \u2014 genuinely insufficient evidence to determine what the merchant actually meant.",
+  "engine_capability_required": null
+}

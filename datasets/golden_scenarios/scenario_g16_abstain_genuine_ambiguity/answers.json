@@ -1,0 +1,22 @@
+{
+  "scenario_id": "SETL-G16",
+  "name": "abstain_genuine_ambiguity",
+  "expected_status": "EXCEPTION",
+  "expected_findings": [
+    {
+      "code": "AMBIGUOUS_MATCH",
+      "entity": "merchant_order",
+      "entity_id": "MORD-01"
+    }
+  ],
+  "expected_amounts": {
+    "claimed_order_id": "order_g16_UNKNOWN",
+    "candidate_1": "order_g16_01",
+    "candidate_2": "order_g16_02"
+  },
+  "investigation_required": true,
+  "investigation_mode": "ABSTAINED",
+  "root_cause_statement": "",
+  "evidence_notes": "Two real orders (order_g16_01, order_g16_02) share an identical amount (\u20b918000.00) and identical date (2026-08-18) \u2014 no evidence in this dataset distinguishes which one MORD-01 actually refers to. Correct behavior is abstention, not a guess.",
+  "engine_capability_required": null
+}

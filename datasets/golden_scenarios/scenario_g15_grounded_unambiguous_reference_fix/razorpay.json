@@ -1,0 +1,359 @@
+{
+  "settlement": {
+    "id": "SETL-G15",
+    "status": "processed",
+    "orders": [
+      {
+        "id": "order_g15_01",
+        "amount": "33000.00",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "order_g15_02",
+        "amount": "5100.00",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "order_g15_03",
+        "amount": "8800.00",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "order_g15_pad01",
+        "amount": "40495.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g15_pad02",
+        "amount": "34249.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g15_pad03",
+        "amount": "23546.00",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "order_g15_pad04",
+        "amount": "19518.00",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "order_g15_pad05",
+        "amount": "11688.00",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "order_g15_pad06",
+        "amount": "9930.00",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "order_g15_pad07",
+        "amount": "36515.00",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "order_g15_pad08",
+        "amount": "29488.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g15_pad09",
+        "amount": "27790.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g15_pad10",
+        "amount": "13312.00",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "order_g15_pad11",
+        "amount": "23594.00",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "order_g15_pad12",
+        "amount": "31925.00",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "order_g15_pad13",
+        "amount": "1894.00",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "order_g15_pad14",
+        "amount": "43058.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g15_pad15",
+        "amount": "4448.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g15_pad16",
+        "amount": "19089.00",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "order_g15_pad17",
+        "amount": "23339.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g15_pad18",
+        "amount": "44438.00",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "order_g15_pad19",
+        "amount": "38527.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g15_pad20",
+        "amount": "36135.00",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "order_g15_pad21",
+        "amount": "26732.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g15_pad22",
+        "amount": "33810.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g15_pad23",
+        "amount": "9038.00",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "order_g15_pad24",
+        "amount": "38877.00",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "order_g15_pad25",
+        "amount": "8721.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g15_pad26",
+        "amount": "8281.00",
+        "date": "2026-08-18"
+      }
+    ],
+    "payments": [
+      {
+        "id": "pay_g15_01",
+        "order_id": "order_g15_01",
+        "amount": "33000.00",
+        "status": "captured",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "pay_g15_02",
+        "order_id": "order_g15_02",
+        "amount": "5100.00",
+        "status": "captured",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "pay_g15_03",
+        "order_id": "order_g15_03",
+        "amount": "8800.00",
+        "status": "captured",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "pay_g15_pad01",
+        "order_id": "order_g15_pad01",
+        "amount": "40495.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g15_pad02",
+        "order_id": "order_g15_pad02",
+        "amount": "34249.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g15_pad03",
+        "order_id": "order_g15_pad03",
+        "amount": "23546.00",
+        "status": "captured",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "pay_g15_pad04",
+        "order_id": "order_g15_pad04",
+        "amount": "19518.00",
+        "status": "captured",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "pay_g15_pad05",
+        "order_id": "order_g15_pad05",
+        "amount": "11688.00",
+        "status": "captured",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "pay_g15_pad06",
+        "order_id": "order_g15_pad06",
+        "amount": "9930.00",
+        "status": "captured",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "pay_g15_pad07",
+        "order_id": "order_g15_pad07",
+        "amount": "36515.00",
+        "status": "captured",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "pay_g15_pad08",
+        "order_id": "order_g15_pad08",
+        "amount": "29488.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g15_pad09",
+        "order_id": "order_g15_pad09",
+        "amount": "27790.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g15_pad10",
+        "order_id": "order_g15_pad10",
+        "amount": "13312.00",
+        "status": "captured",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "pay_g15_pad11",
+        "order_id": "order_g15_pad11",
+        "amount": "23594.00",
+        "status": "captured",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "pay_g15_pad12",
+        "order_id": "order_g15_pad12",
+        "amount": "31925.00",
+        "status": "captured",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "pay_g15_pad13",
+        "order_id": "order_g15_pad13",
+        "amount": "1894.00",
+        "status": "captured",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "pay_g15_pad14",
+        "order_id": "order_g15_pad14",
+        "amount": "43058.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g15_pad15",
+        "order_id": "order_g15_pad15",
+        "amount": "4448.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g15_pad16",
+        "order_id": "order_g15_pad16",
+        "amount": "19089.00",
+        "status": "captured",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "pay_g15_pad17",
+        "order_id": "order_g15_pad17",
+        "amount": "23339.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g15_pad18",
+        "order_id": "order_g15_pad18",
+        "amount": "44438.00",
+        "status": "captured",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "pay_g15_pad19",
+        "order_id": "order_g15_pad19",
+        "amount": "38527.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g15_pad20",
+        "order_id": "order_g15_pad20",
+        "amount": "36135.00",
+        "status": "captured",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "pay_g15_pad21",
+        "order_id": "order_g15_pad21",
+        "amount": "26732.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g15_pad22",
+        "order_id": "order_g15_pad22",
+        "amount": "33810.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g15_pad23",
+        "order_id": "order_g15_pad23",
+        "amount": "9038.00",
+        "status": "captured",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "pay_g15_pad24",
+        "order_id": "order_g15_pad24",
+        "amount": "38877.00",
+        "status": "captured",
+        "date": "2026-08-17"
+      },
+      {
+        "id": "pay_g15_pad25",
+        "order_id": "order_g15_pad25",
+        "amount": "8721.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g15_pad26",
+        "order_id": "order_g15_pad26",
+        "amount": "8281.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      }
+    ],
+    "refunds": []
+  }
+}

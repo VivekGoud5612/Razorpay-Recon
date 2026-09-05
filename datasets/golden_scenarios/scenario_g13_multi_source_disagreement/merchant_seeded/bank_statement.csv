@@ -1,0 +1,2 @@
+transaction_id,utr,transaction_date,description,debit,credit
+BTX-SCENARIO_G13_MULTI_SOURCE_DISAGREEMENT-0001,UTR-G13-001,2026-08-16,Settlement credit - SETL-G13,0.00,489555.26

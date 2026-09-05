@@ -1,0 +1,22 @@
+{
+  "orders_total": 60,
+  "orders_created": 60,
+  "orders_reused": 0,
+  "settlement_id": "SETL-RICH-001",
+  "payments": 60,
+  "payments_skipped": 0,
+  "refunds": 0,
+  "settlement_entries": 60,
+  "settlement_entries_skipped": 0,
+  "skipped_detail": [],
+  "merchant_seeded": {
+    "written": [
+      "merchant_orders.csv",
+      "ledger.csv",
+      "bank_statement.csv",
+      "pos.csv",
+      "other_gateway.csv"
+    ],
+    "unmapped_razorpay_order_ids": []
+  }
+}

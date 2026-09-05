@@ -129,14 +129,65 @@ class LLMInvestigator:
             system_prompt=SYSTEM_PROMPT,
             user_prompt=self._build_prompt(evidence),
             response_schema=INVESTIGATION_RESPONSE_SCHEMA,
-            tools=None, ##self._document_tools.definitions(),
-            tool_handlers=None, #{
-                #"get_document": self._document_tools.get_document,
-                #"search_document": self._document_tools.search_document,
-            #},
+            tools=self._document_tools.definitions(),
+            tool_handlers=self._scoped_tool_handlers(evidence),
         )
 
-        return self._to_response(result,evidence)
+        return self._to_response(result, evidence)
+
+    def _scoped_tool_handlers(
+        self,
+        evidence: EvidencePackage,
+    ) -> dict[str, Any]:
+        """Binds the document tools to exactly the object_keys present in
+        this EvidencePackage. The model is never given raw storage access:
+        every call is checked against this allowlist before it reaches
+        DocumentTools/ObjectStorage, so it can only retrieve documents that
+        are already part of the current investigation's evidence.
+        """
+        allowed_object_keys = {
+            item.object_key
+            for item in evidence.evidence
+            if item.object_key
+        }
+
+        async def get_document(arguments: dict[str, Any]) -> str:
+            object_key = arguments.get("object_key")
+
+            if object_key not in allowed_object_keys:
+                return json.dumps(
+                    {
+                        "error": (
+                            "object_key not present in the supplied "
+                            "evidence package"
+                        ),
+                    }
+                )
+
+            return await self._document_tools.get_document(object_key)
+
+        async def search_document(arguments: dict[str, Any]) -> str:
+            object_key = arguments.get("object_key")
+
+            if object_key not in allowed_object_keys:
+                return json.dumps(
+                    {
+                        "error": (
+                            "object_key not present in the supplied "
+                            "evidence package"
+                        ),
+                    }
+                )
+
+            return await self._document_tools.search_document(
+                object_key,
+                arguments.get("query", ""),
+            )
+
+        return {
+            "get_document": get_document,
+            "search_document": search_document,
+        }
 
     @staticmethod
     def _build_prompt(

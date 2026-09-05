@@ -1,11 +1,11 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { GitBranch } from 'lucide-react'
 import '@xyflow/react/dist/style.css'
-import { Shell, Title, Kpi } from '@/components/shell'
+import { Shell, Title } from '@/components/shell'
 import { LoadingState, ErrorState, EmptyState } from '@/components/async-state'
 import { useGraph } from '@/lib/hooks/useGraph'
 import type { GraphNode } from '@/lib/types/domain'
@@ -15,18 +15,40 @@ const Background = dynamic(() => import('@xyflow/react').then((m) => m.Backgroun
 const Controls = dynamic(() => import('@xyflow/react').then((m) => m.Controls), { ssr: false })
 const MiniMap = dynamic(() => import('@xyflow/react').then((m) => m.MiniMap), { ssr: false })
 
+// This `style.width` (inline, applied per node below) is the single source
+// of truth for each node's rendered width — it overrides @xyflow/react's
+// own hardcoded `.react-flow__node-default { width: 150px }`, and .graph-node
+// (globals.css) fills exactly this box via `width: 100%` rather than
+// asserting its own fixed width, so the two can never disagree. Row height
+// is generous because long ids now wrap to 2-3 lines instead of overflowing.
+const NODE_WIDTH = 220
+const COLUMN_GAP = 260
+const ROW_HEIGHT = 180
+
 export function GraphPage() {
   const { id = '' } = useParams()
+  const [searchParams] = useSearchParams()
   const graphQuery = useGraph(id)
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null)
 
   const graph = graphQuery.data
+  const focusNodeId = searchParams.get('focus')
+
+  // Deep link from Evidence Explorer ("View in graph") — pre-select the
+  // node the evidence item pointed at once the graph has loaded.
+  useEffect(() => {
+    if (!graph || !focusNodeId) return
+    const match = graph.nodes.find((n) => n.node_id === focusNodeId)
+    if (match) setSelectedNode(match)
+  }, [graph, focusNodeId])
 
   const flowNodes = useMemo(() => {
     if (!graph) return []
     return graph.nodes.map((n, i) => ({
       id: n.node_id,
-      position: { x: (i % 4) * 240 + 30, y: Math.floor(i / 4) * 140 + 30 },
+      position: { x: (i % 4) * COLUMN_GAP + 30, y: Math.floor(i / 4) * ROW_HEIGHT + 30 },
+      style: { width: NODE_WIDTH },
+      selected: n.node_id === selectedNode?.node_id,
       data: {
         label: (
           <div className="graph-node">
@@ -36,7 +58,7 @@ export function GraphPage() {
         ),
       },
     }))
-  }, [graph])
+  }, [graph, selectedNode])
 
   const flowEdges = useMemo(() => {
     if (!graph) return []
@@ -117,7 +139,11 @@ export function GraphPage() {
                     <h3>{selectedNode.entity_type}</h3>
                     <b className="mono">{selectedNode.entity_id}</b>
                     <p>Source: {selectedNode.source}</p>
-                    <Kpi label="Node ID" value={selectedNode.node_id} sub="Graph identifier" />
+                    <div className="node-id-detail">
+                      <span className="eyebrow">Node ID</span>
+                      <b className="mono">{selectedNode.node_id}</b>
+                      <small>Graph identifier</small>
+                    </div>
                     {connections.length > 0 && (
                       <>
                         <span className="eyebrow" style={{ marginTop: 14 }}>

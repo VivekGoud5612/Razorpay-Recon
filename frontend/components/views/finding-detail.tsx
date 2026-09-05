@@ -177,7 +177,7 @@ export function FindingDetail() {
             {finding.evidence.length === 0 ? (
               <EmptyState title="No evidence" message="This finding has no attached evidence references." />
             ) : (
-              <SourceEvidence items={finding.evidence} />
+              <SourceEvidence items={finding.evidence} settlementId={id} />
             )}
             <Link className="button" to={`/reconciliations/${id}/evidence`}>
               Explore all evidence <ArrowUpRight size={15} />

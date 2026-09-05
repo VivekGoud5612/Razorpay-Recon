@@ -14,3 +14,66 @@
 /* Ingestion source-type picker */
 .source-picker{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.source-slot{border:1px solid var(--border);background:var(--card);padding:14px;display:grid;gap:8px}.source-slot b{font-size:11px}.source-slot span{font-size:10px;color:var(--muted-foreground)}.source-slot select,.source-slot input[type=file]{font-size:11px;width:100%}.source-slot.filled{border-color:#7fa393;background:#f2f7f4}.field-row{display:grid;gap:6px;margin-bottom:20px;max-width:420px}.field-row label{font-size:11px;font-weight:700;color:var(--muted-foreground)}.field-row input[type=text]{border:1px solid var(--border);background:var(--card);padding:9px 11px;font-size:13px;border-radius:3px}.step-list{display:grid;gap:6px;margin:14px 0;font-size:11px;color:var(--muted-foreground)}.step-list .active{color:var(--primary);font-weight:700}.step-list .done{color:#397166}.form-error{color:var(--destructive);font-size:11px;margin-top:8px}
 @media(max-width:900px){.source-picker{grid-template-columns:repeat(2,1fr)}}
+
+/* Evidence Explorer: finding -> evidence -> source -> entity -> record -> graph */
+.source-item.evidence-chain{align-items:flex-start}
+.evidence-chain-head{display:flex;align-items:center;gap:8px}
+.evidence-reason{display:block;color:var(--muted-foreground);font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.evidence-chain-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:8px}
+.evidence-record{font-size:11px}
+.evidence-record summary{cursor:pointer;color:var(--primary);font-weight:600}
+.evidence-record summary:hover{text-decoration:underline}
+.evidence-record-fields{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0 0;padding:10px 12px;background:var(--muted)}
+.evidence-record-fields dt{color:var(--muted-foreground);font-size:10px}
+.evidence-record-fields dd{margin:0;font-size:11px;word-break:break-word}
+.evidence-no-record{color:var(--muted-foreground);font-size:11px;font-style:italic}
+.evidence-object-key{color:var(--muted-foreground);font-size:10px}
+.evidence-graph-link{display:inline-flex;align-items:center;gap:4px;font-size:11px}
+
+/* Graph node cards: keep long entity IDs / finding codes inside the box.
+   ReactFlow's default node wrapper sizes to its rendered content; without
+   an explicit max-width + wrapping, a long id renders on one unbroken line
+   and spills past the card, most visibly once the selected outline makes
+   the intended box explicit. */
+/*
+ * IMPORTANT: this element (.graph-node) is rendered as `data.label` INSIDE
+ * xyflow's own node wrapper (.react-flow__node.react-flow__node-default),
+ * which is a SEPARATE, already-sized/padded box (@xyflow/react's own
+ * stylesheet hardcodes `.react-flow__node-default { width: 150px; padding:
+ * 10px }`; our node objects override that width via an inline
+ * `style={{width: NODE_WIDTH}}` in graph-page.tsx, which — being inline —
+ * reliably wins over that stylesheet rule regardless of CSS load order).
+ *
+ * A previous fix gave THIS inner element its own fixed width equal to the
+ * OUTER wrapper's *total* width, ignoring the outer wrapper's own 10px
+ * padding on each side — so the inner bordered card was always ~20px wider
+ * than the space actually available inside its parent, independent of any
+ * text content. That is the real, previously-missed root cause of the
+ * selected-node overflow. Fix: this element must fill its parent exactly
+ * (`width: 100%`, `box-sizing: border-box` so its own padding/border stay
+ * inside that 100%) rather than assert an independent fixed width.
+ */
+.graph-node{width:100%;box-sizing:border-box}
+.graph-node span,.graph-node b,.graph-node strong{min-width:0;overflow-wrap:anywhere;word-break:break-word;white-space:normal;display:block}
+.react-flow__node-default{box-sizing:border-box}
+.react-flow__node.selected .graph-node{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary),0 4px 10px #00000022}
+
+/* Node detail sidebar (.node-details, 270px fixed column): a long node_id
+   or connection target previously used .kpi's 22px, unwrapped `strong`
+   (sized for short numeric KPIs) or a flex row with no min-width:0 on its
+   children — both let long identifier text run past the panel's own
+   right edge instead of wrapping inside it. */
+.node-id-detail{display:grid;gap:4px;margin-top:14px;min-width:0}
+.node-id-detail b{overflow-wrap:anywhere;word-break:break-word;font-size:12px}
+.rel-rows{min-width:0}
+.rel-rows .relationship-list{flex-wrap:wrap;row-gap:4px}
+.rel-rows .relationship-list b,.rel-rows .relationship-list span{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+
+/* Ingestion error: an intentional validation rejection, explained plainly,
+   with the raw backend detail always available (never hidden) behind a
+   disclosure. */
+.ingestion-error{display:grid;gap:4px;text-align:left;max-width:420px}
+.ingestion-error-tag{display:inline-block;color:var(--destructive);text-transform:uppercase;font-size:9px;letter-spacing:.06em}
+.ingestion-error details{margin-top:2px}
+.ingestion-error summary{cursor:pointer;color:var(--muted-foreground);font-size:10px}
+.ingestion-error-raw{white-space:pre-wrap;word-break:break-word;background:var(--muted);padding:8px;margin:6px 0 0;font-size:10px;color:var(--foreground)}

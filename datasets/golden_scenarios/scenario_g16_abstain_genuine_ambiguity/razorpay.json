@@ -1,0 +1,299 @@
+{
+  "settlement": {
+    "id": "SETL-G16",
+    "status": "processed",
+    "orders": [
+      {
+        "id": "order_g16_01",
+        "amount": "18000.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g16_02",
+        "amount": "18000.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g16_pad01",
+        "amount": "30274.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g16_pad02",
+        "amount": "34280.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g16_pad03",
+        "amount": "14008.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g16_pad04",
+        "amount": "1906.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g16_pad05",
+        "amount": "18144.00",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "order_g16_pad06",
+        "amount": "19267.00",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "order_g16_pad07",
+        "amount": "37248.00",
+        "date": "2026-08-22"
+      },
+      {
+        "id": "order_g16_pad08",
+        "amount": "34480.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g16_pad09",
+        "amount": "35322.00",
+        "date": "2026-08-22"
+      },
+      {
+        "id": "order_g16_pad10",
+        "amount": "7729.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g16_pad11",
+        "amount": "43448.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g16_pad12",
+        "amount": "37206.00",
+        "date": "2026-08-22"
+      },
+      {
+        "id": "order_g16_pad13",
+        "amount": "45006.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g16_pad14",
+        "amount": "26524.00",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "order_g16_pad15",
+        "amount": "26490.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g16_pad16",
+        "amount": "12283.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g16_pad17",
+        "amount": "36717.00",
+        "date": "2026-08-22"
+      },
+      {
+        "id": "order_g16_pad18",
+        "amount": "40296.00",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "order_g16_pad19",
+        "amount": "29352.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g16_pad20",
+        "amount": "28771.00",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "order_g16_pad21",
+        "amount": "35721.00",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "order_g16_pad22",
+        "amount": "40379.00",
+        "date": "2026-08-20"
+      }
+    ],
+    "payments": [
+      {
+        "id": "pay_g16_01",
+        "order_id": "order_g16_01",
+        "amount": "18000.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g16_02",
+        "order_id": "order_g16_02",
+        "amount": "18000.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g16_pad01",
+        "order_id": "order_g16_pad01",
+        "amount": "30274.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g16_pad02",
+        "order_id": "order_g16_pad02",
+        "amount": "34280.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g16_pad03",
+        "order_id": "order_g16_pad03",
+        "amount": "14008.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g16_pad04",
+        "order_id": "order_g16_pad04",
+        "amount": "1906.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g16_pad05",
+        "order_id": "order_g16_pad05",
+        "amount": "18144.00",
+        "status": "captured",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "pay_g16_pad06",
+        "order_id": "order_g16_pad06",
+        "amount": "19267.00",
+        "status": "captured",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "pay_g16_pad07",
+        "order_id": "order_g16_pad07",
+        "amount": "37248.00",
+        "status": "captured",
+        "date": "2026-08-22"
+      },
+      {
+        "id": "pay_g16_pad08",
+        "order_id": "order_g16_pad08",
+        "amount": "34480.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g16_pad09",
+        "order_id": "order_g16_pad09",
+        "amount": "35322.00",
+        "status": "captured",
+        "date": "2026-08-22"
+      },
+      {
+        "id": "pay_g16_pad10",
+        "order_id": "order_g16_pad10",
+        "amount": "7729.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g16_pad11",
+        "order_id": "order_g16_pad11",
+        "amount": "43448.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g16_pad12",
+        "order_id": "order_g16_pad12",
+        "amount": "37206.00",
+        "status": "captured",
+        "date": "2026-08-22"
+      },
+      {
+        "id": "pay_g16_pad13",
+        "order_id": "order_g16_pad13",
+        "amount": "45006.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g16_pad14",
+        "order_id": "order_g16_pad14",
+        "amount": "26524.00",
+        "status": "captured",
+        "date": "2026-08-19"
+      },
+      {
+        "id": "pay_g16_pad15",
+        "order_id": "order_g16_pad15",
+        "amount": "26490.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g16_pad16",
+        "order_id": "order_g16_pad16",
+        "amount": "12283.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g16_pad17",
+        "order_id": "order_g16_pad17",
+        "amount": "36717.00",
+        "status": "captured",
+        "date": "2026-08-22"
+      },
+      {
+        "id": "pay_g16_pad18",
+        "order_id": "order_g16_pad18",
+        "amount": "40296.00",
+        "status": "captured",
+        "date": "2026-08-18"
+      },
+      {
+        "id": "pay_g16_pad19",
+        "order_id": "order_g16_pad19",
+        "amount": "29352.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g16_pad20",
+        "order_id": "order_g16_pad20",
+        "amount": "28771.00",
+        "status": "captured",
+        "date": "2026-08-20"
+      },
+      {
+        "id": "pay_g16_pad21",
+        "order_id": "order_g16_pad21",
+        "amount": "35721.00",
+        "status": "captured",
+        "date": "2026-08-21"
+      },
+      {
+        "id": "pay_g16_pad22",
+        "order_id": "order_g16_pad22",
+        "amount": "40379.00",
+        "status": "captured",
+        "date": "2026-08-20"
+      }
+    ],
+    "refunds": []
+  }
+}

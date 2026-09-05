@@ -1,0 +1,2 @@
+transaction_id,utr,transaction_date,description,debit,credit
+BTX-SCENARIO_G03_CLEAN_WITH_REFUND-0001,UTR-G03-001,2026-08-11,Settlement credit - SETL-G03,0.00,411146.87

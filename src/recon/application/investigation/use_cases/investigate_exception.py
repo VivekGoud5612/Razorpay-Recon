@@ -41,7 +41,11 @@ class InvestigateExceptionUseCase:
             for finding_id in request.finding_ids
         ]
 
-        package = EvidenceBuilder(graph).build(
+        package = await EvidenceBuilder(
+            graph,
+            self._repository,
+            settlement_id=request.settlement_id,
+        ).build(
             findings=selected_findings,
             depth=2,
         )

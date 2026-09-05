@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from recon.application.reconciliation.dto.response import ReconcileSettlementResponse
+from recon.application.reconciliation.dto.response import EvidenceDetail, ReconcileSettlementResponse
 from recon.application.reconciliation.dto.run import ReconciliationRunResponse
 from recon.domain.reconciliation.finding import ReconciliationFinding
 from recon.domain.reconciliation.evidence import EvidenceRef
@@ -47,5 +47,5 @@ class ReconciliationResultRepository:
     async def list_evidence(
         self,
         settlement_id: str,
-    ) -> list[EvidenceRef]:
+    ) -> list[EvidenceDetail]:
         raise NotImplementedError

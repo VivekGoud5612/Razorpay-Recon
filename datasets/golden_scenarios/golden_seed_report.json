@@ -1,0 +1,54 @@
+[
+  {
+    "scenario": "scenario_g10_missing_bank_transaction",
+    "settlement_id": "SETL-G10",
+    "orders_total": 20,
+    "orders_created": 0,
+    "orders_reused": 20,
+    "utr": "UTR-G10-001",
+    "status": "processed",
+    "razorpay_net": "447703.81",
+    "payments_created": 20,
+    "refunds_created": 0,
+    "settlement_entries_created": 20,
+    "skipped_detail": [],
+    "merchant_seeded": {
+      "written": [
+        "merchant_orders.csv",
+        "ledger.csv"
+      ],
+      "skipped_empty": [
+        "bank_statement.csv",
+        "pos.csv",
+        "other_gateway.csv"
+      ],
+      "unmapped_order_refs": []
+    }
+  },
+  {
+    "scenario": "scenario_g12_pending_settlement",
+    "settlement_id": "SETL-G12",
+    "orders_total": 20,
+    "orders_created": 0,
+    "orders_reused": 20,
+    "utr": "UTR-G12-001",
+    "status": "pending",
+    "razorpay_net": "509739.38",
+    "payments_created": 20,
+    "refunds_created": 0,
+    "settlement_entries_created": 20,
+    "skipped_detail": [],
+    "merchant_seeded": {
+      "written": [
+        "merchant_orders.csv",
+        "ledger.csv"
+      ],
+      "skipped_empty": [
+        "bank_statement.csv",
+        "pos.csv",
+        "other_gateway.csv"
+      ],
+      "unmapped_order_refs": []
+    }
+  }
+]

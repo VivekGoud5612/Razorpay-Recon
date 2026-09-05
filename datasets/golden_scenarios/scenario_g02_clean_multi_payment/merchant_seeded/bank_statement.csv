@@ -1,0 +1,2 @@
+transaction_id,utr,transaction_date,description,debit,credit
+BTX-SCENARIO_G02_CLEAN_MULTI_PAYMENT-0001,UTR-G02-001,2026-08-10,Settlement credit - SETL-G02,0.00,378380.40
